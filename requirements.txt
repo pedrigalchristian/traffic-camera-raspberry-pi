@@ -1,0 +1,9 @@
+# list of files intended to be PIP installed
+serial
+pyserial
+xlwt
+picamera
+luma
+luma.core
+luma.oled
+luma.led_matrix
