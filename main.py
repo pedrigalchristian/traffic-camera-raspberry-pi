@@ -38,6 +38,7 @@ speed_limit = 10  # in mph
 main_folder = "LPR Speed Photos"  # Name of your main directory
 parent_directory = '/home/pi/Desktop/'  # Location of your main directory
 token = 'b0d681034ef2a4b8d3db7e0813e440f4780e1519'
+use_led = false
 
 # Constants
 DATA_BUFFER = 30  # size of speed_list
@@ -58,8 +59,9 @@ curr_directory = create_main_folder(main_folder, parent_directory)
 daily_folder_path = ''
 folder_path = ''
 
-# Empty display of LED Matrix.
-led.clear()
+if use_led:
+  # Empty display of LED Matrix.
+  led.clear()
 
 # Initialization of variables shared amongst processes.
 speed_list = mp.Array('d', range(DATA_BUFFER))
@@ -143,17 +145,18 @@ if __name__ == "__main__":
                 # And if the reported max speed is less than the speed limit...
                 if max_speed <= speed_limit:
                     
-                    # The LED Dot Matrix will flash several times.
-                    flash_text(str(round(max_speed)), FLASH_TIME,
+                    if use_led:
+                      # The LED Dot Matrix will flash several times.
+                      flash_text(str(round(max_speed)), FLASH_TIME,
                                                                NUM_FLASH_LONG)
                     print("The captured speed %d mph was below speed limit."
                           % max_speed)
                     
                 else:
-                    
-                    # The LED will flash and persist.
-                    flash_text(str(round(max_speed)), FLASH_TIME, NUM_FLASH)
-                    display_text(str(round(max_speed)), FLASH_PERSIST)
+                    if use_led:
+                      # The LED will flash and persist.
+                      flash_text(str(round(max_speed)), FLASH_TIME, NUM_FLASH)
+                      display_text(str(round(max_speed)), FLASH_PERSIST)
                     
                     # A timestamp is created for this camera capture.
                     folder_path = create_timestamp_folder(daily_folder_path)
@@ -176,7 +179,8 @@ if __name__ == "__main__":
         except:
             #warnings.warn("Keyboard interrupt was detected. Ending program now.")
             warnings.warn("Ending program now.")
-            display_text(ERROR_STR)
+            if use_led:
+                display_text(ERROR_STR)
             
             camera_process.join(1.0)
             LPR_process.join(3.0)
